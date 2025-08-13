@@ -1,0 +1,5 @@
+- include_tasks:
+    file: user.yaml
+
+- include_tasks:
+    file: cloudinit-template.yaml

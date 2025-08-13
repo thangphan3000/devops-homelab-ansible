@@ -1,0 +1,51 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install libguestfs-tools
+  apt:
+    name: libguestfs-tools
+    state: present
+
+- name: Check if Debian cloud image exists
+  stat:
+    path: "/tmp/{{ proxmox_servers.debian_image_file }}"
+  register: debian_image_stat
+
+- name: Download Debian cloud image
+  get_url:
+    url: "{{ proxmox_servers.debian_image_url }}"
+    dest: "/tmp/{{ proxmox_servers.debian_image_file }}"
+    mode: '0644'
+  when: not debian_image_stat.stat.exists
+
+- name: Install qemu-guest-agent in cloud image
+  shell: virt-customize -a {{ proxmox_servers.debian_image_file }} --install qemu-guest-agent
+  args:
+    chdir: /tmp
+
+- name: Create VM template
+  shell: qm create {{proxmox_servers.vm_id}} --name {{ proxmox_servers.template_name }} --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
+
+- name: Import disk to VM
+  shell: qm importdisk {{ proxmox_servers.vm_id }} {{ proxmox_servers.debian_image_file }} {{ proxmox_servers.storage }}
+  args:
+    chdir: /tmp
+
+- name: Set SCSI hardware and attach disk
+  shell: qm set {{ proxmox_servers.vm_id }} --scsihw virtio-scsi-pci --scsi0 {{ proxmox_servers.storage }}:{{ proxmox_servers.vm_id }}/vm-{{ proxmox_servers.vm_id }}-disk-0.raw
+
+- name: Set boot configuration
+  shell: qm set {{ proxmox_servers.vm_id }} --boot c --bootdisk scsi0
+
+- name: Add cloud-init drive
+  shell: qm set {{ proxmox_servers.vm_id }} --ide2 {{ proxmox_servers.storage }}:cloudinit
+
+- name: Configure serial console
+  shell: qm set {{ proxmox_servers.vm_id }} --serial0 socket --vga serial0
+
+- name: Enable QEMU guest agent
+  shell: qm set {{ proxmox_servers.vm_id }} --agent enabled=1
+
+- name: Convert VM to template
+  shell: qm template {{ proxmox_servers.vm_id }}

@@ -1,0 +1,4 @@
+- name: setup proxmox cloud-init template and it related user
+  hosts: [proxmox_servers]
+  roles:
+    - { role: proxmox-server, tags: pm }

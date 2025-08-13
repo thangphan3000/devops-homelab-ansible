@@ -1,0 +1,8 @@
+proxmox_servers:
+  vm_id: 9004
+  template_name: "debian-11-cloudinit-template"
+  debian_image_url: "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+  debian_image_file: "debian-11-generic-amd64.qcow2"
+  terraform_user: "terraform_user@pve"
+  terraform_password: "secure1234"
+  storage: "local"
