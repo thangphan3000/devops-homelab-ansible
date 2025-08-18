@@ -1,0 +1,9 @@
+- include_tasks:
+    file: master.yaml
+  when:
+  - inventory_hostname in groups['masters'][0]
+
+- include_tasks:
+    file: worker.yaml
+  when:
+  - inventory_hostname in groups['workers']

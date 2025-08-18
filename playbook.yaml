@@ -2,3 +2,8 @@
   hosts: [proxmox_servers]
   roles:
     - { role: proxmox-server, tags: pm }
+
+- name: setup k3s cluster
+  hosts: [masters, workers]
+  roles:
+    - { role: kubernetes, tags: k8s }

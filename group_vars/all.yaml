@@ -6,3 +6,7 @@ proxmox_servers:
   terraform_user: "terraform_user@pve"
   terraform_password: "secure1234"
   storage: "local"
+
+k3s:
+  version: "v1.33.3+k3s1"
+  exec: "--disable=traefik"
