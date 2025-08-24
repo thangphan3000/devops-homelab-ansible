@@ -1,16 +1,16 @@
-- name: Create Terraform role
+- name: create terraform role
   command: >
     pveum role add terraform_role -privs
     "Datastore.AllocateSpace Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate Sys.Audit VM.PowerMgmt SDN.Use VM.GuestAgent.Audit VM.GuestAgent.Unrestricted"
   register: role_creation
   failed_when: role_creation.rc != 0 and "already exists" not in role_creation.stderr
 
-- name: Create Terraform user
+- name: create terraform user
   command: >
     pveum user add {{ proxmox_servers.terraform_user }} --password {{ proxmox_servers.terraform_password }}
   register: user_creation
   failed_when: user_creation.rc != 0 and "already exists" not in user_creation.stderr
 
-- name: Assign role to Terraform user
+- name: assign role to terraform user
   command: >
     pveum aclmod / -user {{ proxmox_servers.terraform_user }} -role terraform_role
