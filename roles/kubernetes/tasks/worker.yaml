@@ -1,3 +1,6 @@
-- name: Install k3s agent and join the control plane
-  shell: |
-    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s.version }}" K3S_URL="https://{{ hostvars[groups['masters'][0]].ansible_host }}:6443" K3S_TOKEN={{ hostvars[groups['masters'][0]].node_token }} sh -
+- name: add worker node
+  shell: "{{ hostvars[groups['masters'][0]].join_worker_node_command }} >> {{ kubernetes.logs_nodes }}"
+  args:
+    chdir: /var/log
+    creates: "{{ kubernetes.logs_nodes }}"
+  become: true

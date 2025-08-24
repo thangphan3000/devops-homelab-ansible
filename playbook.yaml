@@ -1,9 +1,9 @@
-- name: setup proxmox cloud-init template and it related user
+- name: Setup proxmox cloud-init template and it related user
   hosts: [proxmox_servers]
   roles:
     - { role: proxmox-server, tags: pm }
 
-- name: setup k3s cluster
+- name: setup k8s cluster
   hosts: [masters, workers]
   roles:
     - { role: kubernetes, tags: k8s }
